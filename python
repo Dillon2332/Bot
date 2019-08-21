@@ -1,0 +1,71 @@
+import time, sys
+
+from selenium import webdriver
+from selenium.common.exceptions import TimeoutException, UnexpectedAlertPresentException
+from selenium.common.exceptions import NoSuchElementException
+from urllib3.exceptions import MaxRetryError
+
+global votes
+votes = 0
+def end():
+    print("1000 votes obtained")
+def starttimer():
+    global start_time
+    start_time = time.time()
+def run():
+    try:
+        global votes
+        options = webdriver.ChromeOptions()
+        options.add_argument("--incognito")
+        options.add_argument("--disable-infobars")
+        options.add_argument("--headless")
+
+        web = webdriver.Chrome(options=options)
+
+        web.get('Insert Website URL Here')
+
+        vote = web.find_element_by_id('ID of vote option (normally displayed as PDI_answer#######)')
+
+
+
+        submitvote = web.find_element_by_id('ID of vote button (normally displayed as pd-vote-button#######)')
+
+        vote.click()
+        submitvote.click()
+
+
+        time.sleep(.8)
+        web.quit()
+        votes += 1
+        if votes/5 == int(votes/5):
+            print(votes)
+        end_time = time.time()
+        length = (start_time - end_time)
+        if length < -175:
+            time.sleep(60)
+            starttimer()
+            run()
+        else:
+            starttimer()
+            run()
+    except TimeoutException:
+        web.close()
+        starttimer()
+        run()
+    except NoSuchElementException:
+        web.close()
+        starttimer()
+        run()
+    except UnexpectedAlertPresentException:
+        web.close()
+        starttimer()
+        run()
+    except MaxRetryError:
+        web.close()
+        starttimer()
+        run()
+starttimer()
+run()
+
+
+
